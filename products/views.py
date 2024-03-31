@@ -5,7 +5,6 @@ from rest_framework.decorators import api_view
 from .models import Product
 from .serializer import ProductSerializer
 
-# /products 
 @api_view(['GET'])
 def getProducts(request):
     try:

@@ -2,4 +2,4 @@
 venv/
 
 # environment variables
-main/.env
+.env
