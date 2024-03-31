@@ -13,12 +13,10 @@ from .serializer import ProductSerializer
 def getProducts(request):
     try:
         products = Product.objects.all()
-        if not products:
-            return JsonResponse({"message": "Somethinh Go Wrong"}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
         serializer = ProductSerializer(products, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     except Exception as e:
-        return JsonResponse({"message": "An error occurred"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return Response({"message": "An error occurred"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 @api_view(['GET'])
