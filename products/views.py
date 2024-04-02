@@ -27,9 +27,19 @@ def GetProduct(request, ProductId):
     except Product.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
+
+@api_view(['GET'])
+def getProductsByCategory(request, CategoryId):
+    try:
+        products = Product.objects.filter(category_id=CategoryId)
+        serializer = ProductSerializer(products, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    except:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+
 class ProductListView(generics.ListAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    filter_backends = [filters.SearchFilter]
     search_fields = ['name', 'description', 'category_id__name']
-    ordering_fields = ['name']
