@@ -1,8 +1,9 @@
 from enum import Enum
 from django.db import models
+from django.contrib.auth.models import AbstractUser
 from django.core.validators import RegexValidator
 # Create your models here.
-class User(models.Model):
+class User(AbstractUser):
 
     GENDER_CHOICES = [
         ("F", 'Female'),
