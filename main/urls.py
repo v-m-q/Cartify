@@ -16,16 +16,18 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from shoppingCart.views import getCart , addItem , removeItem , updateQuantity
+from shoppingCart.views import get_cart , add_item , remove_item , update_quantity , get_total_price
 from . import views
 
 urlpatterns = [
     path('', views.getHomeData),
     path('admin/', admin.site.urls),
     path('products/', include('products.urls')),
-    path ('cart/', getCart , name='shoppingCart'),
-    path ('cart/add/', addItem , name='addToCart'),
-    path ('cart/remove/', removeItem , name='removeFromCart'),
-    path ('/cart/<int:cartitem_id>/quantity/', updateQuantity , name='updateQuantity'),
+    path ('cart/', get_cart , name='shopping_cart'),
+    path ('cart/add/', add_item , name='add_to_cart'),
+    path ('cart/remove/', remove_item , name='remove_from_cart'),
+    path ('/cart/<int:cartitem_id>/quantity/', update_quantity , name='update_quantity'),
+    path ('/cart/total-price', get_total_price , name='get_total_price'),
+
 
 ]

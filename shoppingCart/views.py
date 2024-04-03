@@ -4,7 +4,6 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
-from user_menna.models import User
 from products.models import Product
 from .models import Cart , CartItem 
 from .serializers import CartItemSerializer , CartSerializer
@@ -12,24 +11,22 @@ from .serializers import CartItemSerializer , CartSerializer
 # Create your views here.
 
 
-#### get cart
+
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def getCart(request):
+def get_cart(request):
     try:
-        cart = Cart.objects.filter(user=request.user)
-        if cart.exists(): 
-            serializer = CartSerializer(cart, many=False)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        else:
-            return Response({'detail': 'Cart not found'}, status=status.HTTP_404_NOT_FOUND)
+        cart = Cart.objects.get(user=request.user)
+        serializer = CartSerializer(cart)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    except Cart.DoesNotExist:
+        return Response({'detail': 'Cart not found'}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
         return Response({'detail': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
-def addItem(request):
+def add_item(request):
     product_id = request.data.get('product_id')
     quantity = int(request.data.get('quantity', 1))
     
@@ -58,7 +55,7 @@ def addItem(request):
 
 @api_view(['DELETE'])
 @permission_classes([IsAuthenticated])
-def removeItem(request, cart_item_id):
+def remove_item(request, cart_item_id):
     try:
         cart_item = CartItem.objects.get(pk=cart_item_id)
     except CartItem.DoesNotExist:
@@ -69,7 +66,7 @@ def removeItem(request, cart_item_id):
 
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
-def updateQuantity(request, cart_item_id):
+def update_quantity(request, cart_item_id):
     try:
         cart_item = CartItem.objects.get(pk=cart_item_id)
     except CartItem.DoesNotExist:
