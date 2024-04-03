@@ -9,45 +9,109 @@ from .serializers import UserSerializer
 from .models import User
 from django.http import JsonResponse
 from rest_framework.views import APIView
+from rest_framework.authtoken.models import Token
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
+from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.contrib.auth import authenticate
+from django.shortcuts import render
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from .models import *
+from .serializers import *
+from rest_framework.views import APIView
+from rest_framework.authtoken.models import Token
 
-
-class Login(APIView):
-    def login(self, request):
-        email    = request.data.get('email')
-        password = request.data.get('password')
-        user = authenticate(email=email, password=password)
-        refresh  = RefreshToken.for_user(user)
-        return JsonResponse({
-            'refresh': str(refresh),
-            'access': str(refresh.access_token),            
-        })
-
-
-# @api_view(['POST'])
-# def signup(request):
-#     serializer = UserSerializer(data=request.data)
-#     if serializer.is_valid():
-#         serializer.save()
-#         user = User.objects.get(email=request.data['email'])
-#         # user.set_password  (request.data['password'])
-#         user.save()
-#         token = Token.objects.create(user=user)
-#         return Response({'token': token.key, 'user': serializer.data})
-#     return Response(serializer.errors, status=status.HTTP_200_OK)
-
-# @api_view(['POST'])
-# def login(request):
-#     user = get_object_or_404(User, email=request.data['email'])
-#     if not user.check_password(request.data['password']):
-#         return Response("missing user", status=status.HTTP_404_NOT_FOUND)
-#     token, created = Token.objects.get_or_create(user=user)
-#     serializer = UserSerializer(user)
-#     return Response({'token': token.key, 'user': serializer.data})
-
+# def home(request):
+#     return render(request , 'home.html')
 @api_view(['GET'])
-@authentication_classes([SessionAuthentication, TokenAuthentication])
-@permission_classes([IsAuthenticated])
-def getAccountData(request):
-    return Response("passed!")
+def get_book(request):
+    book_objs = User.objects.all()
+    serializer = UserSerializer(book_objs , many=True)
+    return Response({'status' : 200 , 'payload' : serializer.data})
+    
+
+from rest_framework_simplejwt.tokens import RefreshToken
+    
+class RegisterUser(APIView):
+    def post(self , request):
+        serializer = UserSerializer(data = request.data)
+
+        if not serializer.is_valid():
+            return Response({'status' : 403 ,'errors' : serializer.errors , 'messge' : 'Something went wrong'})
+            
+        serializer.save()  
+
+        user = User.objects.get(username = serializer.data['username'])
+        refresh = RefreshToken.for_user(user)
+        
+        
+        return Response({'status' : 200 ,
+        'payload' : serializer.data,
+        'refresh': str(refresh),
+        'access': str(refresh.access_token), 'messge' : 'your data is saved'})
+
+        
+
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
+from rest_framework_simplejwt.authentication import JWTAuthentication
+
+class StudentAPI(APIView):
+    authentication_classes = [ JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        # student_objs = Student.objects.all()
+        print(request)
+        userData = User.objects.filter(email=request.user)
+        serializer = UserSerializer(userData, many=True)
+        return Response({'status' : 200 , 'payload' : serializer.data})
+    
+        # serializer = UserSerializer(User.objects.filter , many=True)
+        # return Response(serializer.data, status=status.HTTP_200_OK)
+       
+    def post(self, request):
+        serializer = UserSerializer(data = request.data)
+
+        if not serializer.is_valid():
+            print(serializer.errors)
+            return Response({'status' : 403 ,'errors' : serializer.errors , 'messge' : 'Something went wrong'})
+            
+        serializer.save()   
+        return Response({'status' : 200 , 'payload' : serializer.data , 'messge' : 'your data is saved'})
+
+   
+    def put(self, request):
+        pass
+    
+    def patch(self,request):
+        try:
+            student_obj = User.objects.get(id = request.data['id'])
+            serializer = UserSerializer(student_obj , data = request.data , partial =True)
+            if not serializer.is_valid():
+                print(serializer.errors)
+                return Response({'status' : 403 ,'errors' : serializer.errors , 'messge' : 'Something went wrong'})
+                
+            serializer.save()   
+            return Response({'status' : 200 , 'payload' : serializer.data , 'messge' : 'your data is updated'})
+
+        except Exception as e:
+            print(e)
+            return Response({'status' :403 , 'message' : 'invalid id'})
+   
+    def delete(self, request):
+        try:
+            id = request.GET.get('id')
+            student_obj = User.objects.get(id = id)    
+            student_obj.delete()
+            return Response({'status' : 200, 'message' : 'deleted'})
+    
+        except Exception as e:
+            print(e)
+            return Response({'status' :403 , 'message' : 'invalid id'})
+        
+            
+
+    
