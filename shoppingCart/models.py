@@ -36,7 +36,3 @@ def total_price(self):
 def __str__(self):
     return f"{self.quantity} x {self.product.name}"
     
-
-
-# cart = Cart.objects.get(id=1)
-# total_price = cart.total_price()

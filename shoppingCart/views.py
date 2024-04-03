@@ -83,7 +83,15 @@ def updateQuantity(request, cart_item_id):
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-
-
-
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_total_price(request):
+    try:
+        cart = Cart.objects.get(user=request.user)
+        total_price = cart.total_price()
+        return Response({"total_price": total_price}, status=status.HTTP_200_OK)
+    except Cart.DoesNotExist:
+        return Response({"error": "Cart does not exist"}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
