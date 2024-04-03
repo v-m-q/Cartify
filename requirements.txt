@@ -8,4 +8,4 @@ mysqlclient==2.2.4
 pillow==10.2.0
 sqlparse==0.4.4
 typing_extensions==4.10.0
-python-dotenv=1.0.1
+python-dotenv==1.0.1
