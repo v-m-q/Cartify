@@ -67,3 +67,23 @@ def removeItem(request, cart_item_id):
     cart_item.delete()
     return Response({" Deleted Successfully "},status=status.HTTP_204_NO_CONTENT)
 
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def updateQuantity(request, cart_item_id):
+    try:
+        cart_item = CartItem.objects.get(pk=cart_item_id)
+    except CartItem.DoesNotExist:
+        return Response({"error": "Cart item does not exist"}, status=status.HTTP_404_NOT_FOUND)
+    
+    new_quantity = int(request.data.get('quantity', cart_item.quantity))
+    cart_item.quantity = new_quantity
+    cart_item.save()
+    
+    serializer = CartItemSerializer(cart_item)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+
+
+
+
