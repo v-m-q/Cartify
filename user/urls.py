@@ -9,20 +9,19 @@ from rest_framework_simplejwt.views import (
 )
 
 urlpatterns = [
-    #Authentication
-    path('signin', LoginView.as_view(), name='token_obtain_pair'),
+    # account/signup
     path('signup', RegisterView.as_view(), name='auth_register'),
-    # path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-
+    
+    # account/signin
+    path('signin', LoginView.as_view(), name='token_obtain_pair'),
+    
     # account/
     path('', UserAPI.as_view()),
     
     # account/update
     path('update', UserAPI.as_view()),
     
-    # account/login
-    path('login', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    
+    # path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     # path('api/token/verify', TokenVerifyView.as_view(), name='token_verify'),
     # path('api/token/refresh', TokenRefreshView.as_view(), name='token_refresh'),
     
