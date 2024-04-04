@@ -3,3 +3,6 @@ venv/
 
 # environment variables
 main/.env
+
+**/__pycache__/
+*/migrations/__pycache__/
