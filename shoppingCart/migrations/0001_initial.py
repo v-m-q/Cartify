@@ -11,7 +11,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('products', '0001_initial'),
-        # ('user_menna', '0001_initial'),
+        ('user', '0001_initial'),
     ]
 
     operations = [
@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('cart_id', models.AutoField(primary_key=True, serialize=False)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='user_menna.user')),
+                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='user.user')),
             ],
         ),
         migrations.CreateModel(

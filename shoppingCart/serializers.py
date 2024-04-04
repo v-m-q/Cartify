@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from .models import  Cart, CartItem
 from products.serializer import ProductSerializer
-from user_menna.serializers import UserSerializer
+from user.serializer import RegisterSerializer
 
 class CartItemSerializer(serializers.ModelSerializer):
     product = ProductSerializer(many=False) 
@@ -11,7 +11,7 @@ class CartItemSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class CartSerializer(serializers.ModelSerializer):
-    user = UserSerializer(many=False)
+    user = RegisterSerializer(many=False)
     cartitem_set = CartItemSerializer(many=True, read_only=True)
 
     class Meta:

@@ -1,6 +1,6 @@
 from django.db import models
 from products.models import Product
-from user_menna.models import User
+from user.models import User
 from django.core.validators import MinValueValidator
 
 
