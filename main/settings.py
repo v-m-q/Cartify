@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'categories',
     'user',
     'orders',
+    'wishlist',
     'rest_framework',
     'django_filters'
 ]
