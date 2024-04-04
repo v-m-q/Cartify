@@ -3,6 +3,6 @@ from . import views
 
 urlpatterns =[
     path('', views.getProductsByWishlist, name='wishlist'),
-    path('add/', views.addProductsToWishlist, name='addTOWishlist'),
-    path('remove/', views.removeProductsToWishlist, name='removeFromWishlist'),
+    path('add-to-wishlist/', views.addProductsToWishlist, name='add-to-wishlist'),
+    path('remove-from-wishlist/', views.removeProductsToWishlist, name='remove-from-wishlist'),
 ]

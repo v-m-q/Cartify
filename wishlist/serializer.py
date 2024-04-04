@@ -3,8 +3,13 @@ from .models import Wishlist
 from products.serializer import ProductSerializer
 
 class WishlistSerializer(serializers.ModelSerializer):
-    product = ProductSerializer()
+    product_details = serializers.SerializerMethodField()
 
     class Meta:
         model = Wishlist
-        fields = '__all__'
+        fields = ['id', 'user', 'product', 'product_details']
+
+    def get_product_details(self, obj):
+        product = obj.product
+        serializer = ProductSerializer(product)
+        return serializer.data
