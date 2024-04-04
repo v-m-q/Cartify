@@ -11,6 +11,10 @@ class CustomUserManager(BaseUserManager):
             raise ValueError('The First name field must be set')
         if not last_name:
             raise ValueError('The First name field must be set')
+        if not phone:
+            raise ValueError('The First name field must be set')
+        if not address:
+            raise ValueError('The First name field must be set')
         
         email = self.normalize_email(email)
         user = self.model(email=email,first_name=first_name,last_name=last_name)
@@ -20,7 +24,7 @@ class CustomUserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, email, first_name, last_name, password,**extra_fields):
+    def create_superuser(self, email, password, first_name=None, last_name=None, **extra_fields):
         extra_fields.setdefault("is_staff", True)
         extra_fields.setdefault("is_superuser", True)
         extra_fields.setdefault("is_active", True)
@@ -77,7 +81,7 @@ class User(AbstractBaseUser):
     objects = CustomUserManager()
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = [] #"email", "password"] #, "first_name", "last_name", "phone", "address"]
+    REQUIRED_FIELDS = []
 
     def has_perm(self, perm, obj=None):
         return True

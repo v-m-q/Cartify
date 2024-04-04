@@ -3,10 +3,10 @@ from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from .models import Wishlist
+from django.http import JsonResponse
 from .serializer import WishlistSerializer
 
 @api_view(['GET'])
-
 def getProductsByWishlist(request):
     try:
         wishlist_items = Wishlist.objects.filter(user=request.user)
@@ -22,7 +22,7 @@ def addProductsToWishlist(request):
         serializer = WishlistSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save(user=request.user)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return JsonResponse({"data":serializer.data, "status":status.HTTP_201_CREATED})
     except:
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -33,6 +33,6 @@ def removeProductsToWishlist(request):
         product_id = request.data.get('product_id')
         wishlist_item = Wishlist.objects.get(user=request.user, product_id=product_id)
         wishlist_item.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        return JsonResponse({"data":"deleted successfully", "status":status.HTTP_204_NO_CONTENT})
     except Exception as e:
         return Response(status=status.HTTP_400_BAD_REQUEST)
