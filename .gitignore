@@ -4,5 +4,10 @@ venv/
 # environment variables
 main/.env
 
-**/__pycache__/
-*/migrations/__pycache__/
+# Django #
+*.log
+*.pot
+*.pyc
+__pycache__
+db.sqlite3
+media
