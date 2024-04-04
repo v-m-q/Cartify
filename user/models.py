@@ -3,7 +3,7 @@ from django.db import models
 from django.core.validators import RegexValidator
 # Create your models here.
 class CustomUserManager(BaseUserManager):
-    def create_user(self, email,password,first_name,last_name):
+    def create_user(self, email,password,first_name,last_name,phone,address):
         if not email:
             raise ValueError('The Email field must be set')
         if not first_name:
@@ -13,7 +13,8 @@ class CustomUserManager(BaseUserManager):
         
         email = self.normalize_email(email)
         user = self.model(email=email,first_name=first_name,last_name=last_name)
-        # user.gender = gender
+        user.phone = phone
+        user.address = address
         user.set_password(password)
         user.save(using=self._db)
         return user
@@ -38,10 +39,6 @@ class CustomUserManager(BaseUserManager):
 
 class User(AbstractBaseUser):
 
-    GENDER_CHOICES = [
-        ("F", 'Female'),
-        ("M", 'Male'),
-    ]
     first_name = models.CharField(
         max_length=50,
         validators=[
@@ -68,7 +65,8 @@ class User(AbstractBaseUser):
                 message='', 
                 code='nomatch')
         ])
-    # gender=models.CharField(max_length=6,choices=GENDER_CHOICES,default="M",blank=True,null=True)
+    phone = models.CharField(max_length=11, null=True,blank=True)
+    address = models.CharField(max_length=255, null=True,blank=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_superuser =  models.BooleanField(default=False)
@@ -85,4 +83,3 @@ class User(AbstractBaseUser):
     
     def __str__(self):
         return self.email
-    

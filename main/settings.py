@@ -13,9 +13,11 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 from datetime import timedelta
 from pathlib import Path
 import environ
-
+import os
 env = environ.Env()
 environ.Env.read_env()
+
+# load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -48,7 +50,8 @@ INSTALLED_APPS = [
     'orders',
     'wishlist',
     'rest_framework',
-    'django_filters'
+    'django_filters',
+    'shoppingCart',
 ]
 
 MIDDLEWARE = [
