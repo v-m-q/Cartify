@@ -3,6 +3,7 @@ venv/
 
 # environment variables
 main/.env
+.env
 
 # Django #
 *.log
@@ -10,4 +11,3 @@ main/.env
 *.pyc
 __pycache__
 db.sqlite3
-media
