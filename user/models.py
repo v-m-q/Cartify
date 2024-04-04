@@ -3,6 +3,7 @@ from django.db import models
 from django.core.validators import RegexValidator
 # Create your models here.
 class CustomUserManager(BaseUserManager):
+    
     def create_user(self, email,password,first_name,last_name,phone,address):
         if not email:
             raise ValueError('The Email field must be set')
@@ -55,7 +56,9 @@ class User(AbstractBaseUser):
                 message='Name must contain only letters and be at least 3 characters long',
                 code='nomatch')
         ])
+    
     email = models.EmailField(max_length=255,unique=True)
+    
     password=models.CharField(
         max_length=255,
         validators=[
@@ -65,6 +68,7 @@ class User(AbstractBaseUser):
                 message='', 
                 code='nomatch')
         ])
+    
     phone = models.CharField(max_length=11, null=True,blank=True)
     address = models.CharField(max_length=255, null=True,blank=True)
     is_active = models.BooleanField(default=True)
@@ -73,7 +77,7 @@ class User(AbstractBaseUser):
     objects = CustomUserManager()
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ["first_name","last_name"]
+    REQUIRED_FIELDS = [] #"email", "password"] #, "first_name", "last_name", "phone", "address"]
 
     def has_perm(self, perm, obj=None):
         return True
@@ -83,30 +87,32 @@ class User(AbstractBaseUser):
     
     def __str__(self):
         return self.email
-from django.db import models
-from django.contrib.auth.models import AbstractUser
-from .manager import UserManager
+    
+    
+# from django.db import models
+# from django.contrib.auth.models import AbstractUser
+# from .manager import UserManager
 
-from django.conf import settings
+# from django.conf import settings
 
-class User(AbstractUser):
-    username = None
-    email = models.EmailField(unique=True)
-    phone = models.CharField(max_length=12)
-    is_email_verified = models.BooleanField(default=False)
-    is_phone_verified = models.BooleanField(default=False)
-    otp = models.CharField(max_length=6 , null=True,blank=True)
-    email_verification_token = models.CharField(max_length=200 , null=True, blank=True)
-    forget_password_token = models.CharField(max_length=200 ,null=True, blank=True)
+# class User(AbstractUser):
+#     username = None
+#     email = models.EmailField(unique=True)
+#     phone = models.CharField(max_length=12)
+#     is_email_verified = models.BooleanField(default=False)
+#     is_phone_verified = models.BooleanField(default=False)
+#     otp = models.CharField(max_length=6 , null=True,blank=True)
+#     email_verification_token = models.CharField(max_length=200 , null=True, blank=True)
+#     forget_password_token = models.CharField(max_length=200 ,null=True, blank=True)
     
 
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = []
+#     USERNAME_FIELD = 'email'
+#     REQUIRED_FIELDS = []
     
-    objects = UserManager()
+#     objects = UserManager()
     
-    def name(self):
-        return self.first_name + ' ' + self.last_name
+#     def name(self):
+#         return self.first_name + ' ' + self.last_name
 
-    def __str__(self):
-        return self.email
+#     def __str__(self):
+#         return self.email

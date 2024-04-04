@@ -5,19 +5,6 @@ from .models import User
 from rest_framework import generics
 from rest_framework.permissions import AllowAny
 from rest_framework.decorators import (api_view,permission_classes)
-
-# Create your views here.
-
-#Login User
-class LoginView(TokenObtainPairView):
-    serializer_class = LoginSerializer
-
-#Register User
-class RegisterView(generics.CreateAPIView):
-    queryset = User.objects.all()
-    permission_classes = (AllowAny,)
-    serializer_class = RegisterSerializer
-from .models import User
 from .serializers import UserSerializer
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -27,23 +14,34 @@ from django.shortcuts import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
     
-class RegisterUser(APIView):
-    def post(self , request):
-        serializer = UserSerializer(data = request.data)
+#Login User
+class LoginView(TokenObtainPairView):
+    serializer_class = LoginSerializer
 
-        if not serializer.is_valid():
-            return Response({'status' : 403 ,'errors' : serializer.errors , 'messge' : 'Something went wrong'})
+#Register User
+class RegisterView(generics.CreateAPIView):
+    queryset = User.objects.all()
+    permission_classes = (AllowAny,)
+    serializer_class = RegisterSerializer
+    
+    
+# class RegisterUser(APIView):
+#     def post(self , request):
+#         serializer = UserSerializer(data = request.data)
+
+#         if not serializer.is_valid():
+#             return Response({'status' : 403 ,'errors' : serializer.errors , 'messge' : 'Something went wrong'})
             
-        serializer.save()  
+#         serializer.save()  
 
-        user = User.objects.get(username = serializer.data['username'])
-        refresh = RefreshToken.for_user(user)
+#         user = User.objects.get(username = serializer.data['username'])
+#         refresh = RefreshToken.for_user(user)
         
         
-        return Response({'status' : 200 ,
-        'payload' : serializer.data,
-        'refresh': str(refresh),
-        'access': str(refresh.access_token), 'messge' : 'your data is saved'})
+#         return Response({'status' : 200 ,
+#         'payload' : serializer.data,
+#         'refresh': str(refresh),
+#         'access': str(refresh.access_token), 'messge' : 'your data is saved'})
 
         
 

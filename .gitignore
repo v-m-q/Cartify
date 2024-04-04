@@ -12,6 +12,12 @@ orders/migrations/__pycache__
 products/__pycache__
 products/migrations/__pycache__
 
+shoppingCart/__pycache__
+shoppingCart/migrations/__pycache__
+
+wishlist/__pycache__
+wishlist/migrations/__pycache__
+
 payment/__pycache__
 payment/migrations/__pycache__
 
