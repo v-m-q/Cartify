@@ -6,7 +6,7 @@ from .models import Wishlist
 from .serializer import WishlistSerializer
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
+
 def getProductsByWishlist(request):
     try:
         wishlist_items = Wishlist.objects.filter(user=request.user)
@@ -18,12 +18,21 @@ def getProductsByWishlist(request):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def addProductsToWishlist(request):
-    if request.method == 'POST':
+    try:
         serializer = WishlistSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save(user=request.user)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(status=status.HTTP_404_NOT_FOUND)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+    except:
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
 def removeProductsToWishlist(request):
-    pass
+    try:
+        product_id = request.data.get('product_id')
+        wishlist_item = Wishlist.objects.get(user=request.user, product_id=product_id)
+        wishlist_item.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    except Exception as e:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
