@@ -1,16 +1,13 @@
 from django.db import IntegrityError
-from django.shortcuts import render
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 from products.models import Product
-from .models import Cart , CartItem 
-from .serializers import CartItemSerializer , CartSerializer
+from .models import Cart, CartItem 
+from .serializers import CartItemSerializer, CartSerializer
 
 # Create your views here.
-
-
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -23,6 +20,7 @@ def get_cart(request):
         return Response({'detail': 'Cart not found'}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
         return Response({'detail': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -62,7 +60,9 @@ def remove_item(request, cart_item_id):
         return Response({"error": "Cart item does not exist"}, status=status.HTTP_404_NOT_FOUND)
     
     cart_item.delete()
-    return Response({" Deleted Successfully "},status=status.HTTP_204_NO_CONTENT)
+    return Response({"Deleted Successfully"}, status=status.HTTP_204_NO_CONTENT)
+
+
 
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
@@ -80,13 +80,14 @@ def update_quantity(request, cart_item_id):
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_total_price(request):
     try:
         cart = Cart.objects.get(user=request.user)
         total_price = cart.total_price()
-        return Response({"total_price": total_price}, status=status.HTTP_200_OK)
+        return Response({"total_price": total_price }, status=status.HTTP_200_OK)
     except Cart.DoesNotExist:
         return Response({"error": "Cart does not exist"}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:

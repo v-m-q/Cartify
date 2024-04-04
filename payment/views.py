@@ -1,22 +1,22 @@
 from django.shortcuts import render, redirect
 from django.conf import settings
-# from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
 from django.http import HttpResponse
 from payment.models import UserPayment
-from products.models import Product
 import stripe
 import time
 
 
-# @login_required(login_url='login')
-def product_page(request):
-	stripe.api_key = 'your_key'
-	# product = Product.objects.all().first()
+# @permission_classes([IsAuthenticated])
+def purchase(request):
+	# cart_id = request.data.get('cart_id')
+	stripe.api_key = 'secret_key'
 	price = stripe.Price.create(
-				unit_amount=int(50 * 100),  
+				unit_amount=int(99 * 100),  # order total price in cents
 				currency='usd',  
-				product='prod_PrZ150k1rHovHe',  
+				product='app_key',  
 	)
 	if request.method == 'POST':
 		checkout_session = stripe.checkout.Session.create(

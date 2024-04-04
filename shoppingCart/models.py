@@ -3,10 +3,7 @@ from products.models import Product
 from user.models import User
 from django.core.validators import MinValueValidator
 
-
-
 # Create your models here.
-
 class Cart (models.Model):
     cart_id = models.AutoField(primary_key=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)

@@ -1,10 +1,11 @@
 from django.db import models
 from user.models import User
+
 # Create your models here.
 
 class Order(models.Model):
     OrderStatus_Choices=[
-     (  "pending" ,'Pending'),
+     ( "pending" ,'Pending'),
      ( "shipped" ,'Shipped'),
      ( "delivered" ,'Delivered')
     ]
