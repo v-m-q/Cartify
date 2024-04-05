@@ -18,7 +18,7 @@ def getProducts(request):
 @api_view(['GET'])
 def GetProduct(request, ProductId):
     try:
-        product = Product.objects.get(id=ProductId)
+        product = Product.objects.get(product_id=ProductId)
         serializer = ProductSerializer(product)
         return Response(serializer.data, status=status.HTTP_200_OK)
     except Product.DoesNotExist:
