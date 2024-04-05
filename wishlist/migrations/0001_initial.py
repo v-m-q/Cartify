@@ -9,7 +9,6 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('products', '0004_alter_product_category_id_delete_category'),
         ('user', '0001_initial'),
     ]
 
