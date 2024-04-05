@@ -10,7 +10,7 @@ class Product(models.Model):
   price       = models.DecimalField(max_digits = 7 , decimal_places = 2)
   quantity    = models.IntegerField()
   avg_rate    = models.FloatField()
-  thumbnail   = models.ImageField()
+  thumbnail   = models.ImageField(default='fallback.png', blank=True)
   category_id = models.ForeignKey(
     "Category",
     on_delete=models.CASCADE

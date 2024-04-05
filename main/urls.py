@@ -16,7 +16,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.conf.urls.static import static 
 from . import views
+from pathlib import Path
+import os
 
 urlpatterns = [
     path('', views.getHomeData),
@@ -24,7 +27,11 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('account/', include('user.urls')),
     path('products/', include('products.urls')),
+    path('images/', include('images.urls')),
     path('categories/', include('categories.urls')),
     path('wishlist/', include('wishlist.urls')),
     path('cart/',include('shoppingCart.urls'))
 ]
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+urlpatterns += static('media/', document_root=os.path.join(BASE_DIR, 'media'))
