@@ -16,7 +16,7 @@ def purchase(request):
 	price = stripe.Price.create(
 				unit_amount=int(99 * 100),  # order total price in cents
 				currency='usd',  
-				product='app_key',  
+    		product='app_key',  
 	)
 	if request.method == 'POST':
 		checkout_session = stripe.checkout.Session.create(
@@ -29,7 +29,7 @@ def purchase(request):
 			],
 			mode = 'payment',
 			customer_creation = 'always',
-			success_url = 'http://127.0.0.1:8000' ,#+ '/payment_successful?session_id={CHECKOUT_SESSION_ID}',
+			success_url = 'http://127.0.0.1:8000/pay/product_page' ,#+ '/payment_successful?session_id={CHECKOUT_SESSION_ID}',
 			cancel_url = 'http://127.0.0.1:8000' + '/payment_cancelled',
 		)
 		return redirect(checkout_session.url, code=303)
