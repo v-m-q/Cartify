@@ -1,7 +1,5 @@
 from django.db import models
-
-class Category(models.Model):
-  name = models.CharField(max_length=50)
+from categories.models import Category
 
 class Product(models.Model):
   product_id  = models.BigAutoField(auto_created=True, primary_key=True, serialize=False, null=False)
@@ -12,6 +10,6 @@ class Product(models.Model):
   avg_rate    = models.FloatField()
   thumbnail   = models.ImageField(default='fallback.png', blank=True)
   category_id = models.ForeignKey(
-    "Category",
+    Category,
     on_delete=models.CASCADE
   )

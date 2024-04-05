@@ -9,16 +9,10 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
+        ('categories', '__first__'),
     ]
 
     operations = [
-        migrations.CreateModel(
-            name='Category',
-            fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=50)),
-            ],
-        ),
         migrations.CreateModel(
             name='Product',
             fields=[
@@ -29,7 +23,7 @@ class Migration(migrations.Migration):
                 ('quantity', models.IntegerField()),
                 ('avg_rate', models.FloatField()),
                 ('thumbnail', models.ImageField(upload_to='')),
-                ('category_id', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='products.category')),
+                ('category_id', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='categories.category')),
             ],
         ),
     ]

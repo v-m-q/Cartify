@@ -21,6 +21,8 @@ from . import views
 from pathlib import Path
 import os
 
+from. import views
+
 urlpatterns = [
     path('', views.getHomeData),
     path('pay/', include('payment.urls')),
