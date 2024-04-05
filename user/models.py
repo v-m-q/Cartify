@@ -3,7 +3,7 @@ from django.db import models
 from django.core.validators import RegexValidator
 # Create your models here.
 class CustomUserManager(BaseUserManager):
-    def create_user(self, email,password,first_name,last_name,phone,address):
+    def create_user(self, email,password,first_name,last_name,phone=None,address=None):
         if not email:
             raise ValueError('The Email field must be set')
         if not first_name:

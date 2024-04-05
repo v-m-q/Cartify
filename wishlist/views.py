@@ -6,7 +6,7 @@ from .models import Wishlist
 from .serializer import WishlistSerializer
 
 @api_view(['GET'])
-
+@permission_classes([IsAuthenticated])
 def getProductsByWishlist(request):
     try:
         wishlist_items = Wishlist.objects.filter(user=request.user)

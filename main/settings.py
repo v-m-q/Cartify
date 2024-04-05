@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'user',
     'orders',
     'wishlist',
+    'rating',
     'rest_framework',
     'django_filters',
     'shoppingCart',
