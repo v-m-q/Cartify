@@ -8,7 +8,7 @@ from payment.models import UserPayment
 from django.http import JsonResponse
 from rest_framework.response import Response
 import stripe
-import time
+import time, json
 from django.views.decorators.csrf import csrf_exempt
 
 
@@ -20,9 +20,9 @@ def purchase(request):
 	# cart_id = request.data.get('cart_id')
 	stripe.api_key = 'Your-Key'
 	price = stripe.Price.create(
-				unit_amount=int(87 * 100),  # order total price in cents
+				unit_amount=int(json.loads(request.body)['total_price'] * 100),  # order total price in cents
 				currency='usd',  
-    		product='Your-Product_key',  
+    		product='Product_key',  
 	)
 	if request.method == 'POST':
 		checkout_session = stripe.checkout.Session.create(
