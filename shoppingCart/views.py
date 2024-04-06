@@ -103,10 +103,10 @@ def get_total_price(request):
 
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
-def change_cart_item_status(request, cartitem_id):
-    if cart_item.cart.user == request.user:
-        try:
-            cart_item = CartItem.objects.get(pk=cartitem_id)
+def change_cart_item_status(request, cart_item_id):
+    try:
+        cart_item = CartItem.objects.get(pk=cart_item_id)
+        if cart_item.cart.user == request.user:
             new_status = request.data.get('status', None)
             if not new_status:
                 return Response({'detail': 'New status is required.'}, status=status.HTTP_400_BAD_REQUEST)
@@ -119,9 +119,9 @@ def change_cart_item_status(request, cartitem_id):
 
             serializer = CartItemSerializer(cart_item)
             return Response(serializer.data, status=status.HTTP_200_OK)
-        except CartItem.DoesNotExist:
-            return Response({'detail': 'Cart item not found'}, status=status.HTTP_404_NOT_FOUND)
-        except Exception as e:
-            return Response({'detail': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-    else:
-        return Response({'detail': 'You are not allowed to change this item.'}, status=status.HTTP_403_FORBIDDEN)
+        else:
+            return Response({'detail': 'You are not allowed to change this item.'}, status=status.HTTP_403_FORBIDDEN)
+    except CartItem.DoesNotExist:
+        return Response({'detail': 'Cart item not found'}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({'detail': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
