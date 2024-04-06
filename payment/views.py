@@ -5,18 +5,24 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from django.http import HttpResponse
 from payment.models import UserPayment
+from django.http import JsonResponse
+from rest_framework.response import Response
 import stripe
 import time
+from django.views.decorators.csrf import csrf_exempt
 
 
+
+# @api_view(['POST'])
 # @permission_classes([IsAuthenticated])
+@csrf_exempt
 def purchase(request):
 	# cart_id = request.data.get('cart_id')
-	stripe.api_key = 'secret_key'
+	stripe.api_key = 'Your-Key'
 	price = stripe.Price.create(
-				unit_amount=int(99 * 100),  # order total price in cents
+				unit_amount=int(87 * 100),  # order total price in cents
 				currency='usd',  
-    		product='app_key',  
+    		product='Your-Product_key',  
 	)
 	if request.method == 'POST':
 		checkout_session = stripe.checkout.Session.create(
@@ -29,11 +35,11 @@ def purchase(request):
 			],
 			mode = 'payment',
 			customer_creation = 'always',
-			success_url = 'http://127.0.0.1:8000/pay/product_page' ,#+ '/payment_successful?session_id={CHECKOUT_SESSION_ID}',
+			success_url = 'http://localhost:3000/cart' ,#+ '/payment_successful?session_id={CHECKOUT_SESSION_ID}',
 			cancel_url = 'http://127.0.0.1:8000' + '/payment_cancelled',
 		)
-		return redirect(checkout_session.url, code=303)
-	return render(request, 'user_payment/product_page.html')
+		return JsonResponse({'status' : 200 , 'payload' : checkout_session.url}) #redirect(checkout_session.url, code=303)
+	# return render(request, 'user_payment/product_page.html')
 
 
 ## use Stripe dummy card: 4242 4242 4242 4242
