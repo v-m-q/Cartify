@@ -1,32 +1,105 @@
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view,permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from .models import Order, OrderItem
-from .serializers import OrderSerializer, OrderItemSerializer
 from rest_framework import status
+from .models import Order, OrderItem
 from products.models import Product
-from django.db import IntegrityError
+from user.models import User
+from .serializers import OrderItemSerializer, OrderSerializer
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_orders(request):
-    try:
-        orders = Order.objects.filter(user=request.user)
-        serializer = OrderSerializer(orders, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-    except Exception as e:
-        return Response({'detail': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    orders = Order.objects.filter(user=request.user)  
+    serializer = OrderSerializer(orders, many=True)
+    return Response({'orders': serializer.data})
 
-@api_view(['GET'])
+@api_view(['POST'])
 @permission_classes([IsAuthenticated])
-def get_order_details(request, order_id):
+def create_order(request):
+        request.data['user'] = request.user.id
+        serializer = OrderSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def add_item(request, order_id):
     try:
         order = Order.objects.get(order_id=order_id)
-        serializer = OrderSerializer(order)
-        return Response(serializer.data)
     except Order.DoesNotExist:
-        return Response({'error': 'Order not found'}, status=404)
-    except Exception as e:
-        return Response({'error': str(e)}, status=500)
+        return Response({'error': 'Order not found'}, status=status.HTTP_404_NOT_FOUND)
+    
+    try:
+        product_id = request.data['product']
+        quantity = int(request.data['quantity'])
+    except KeyError:
+        return Response({'error': 'Product ID and quantity are required'}, status=status.HTTP_400_BAD_REQUEST)
+    except ValueError:
+        return Response({'error': 'Invalid quantity'}, status=status.HTTP_400_BAD_REQUEST)
 
-  
+    try:
+        product = Product.objects.get(product_id=product_id)
+    except Product.DoesNotExist:
+        return Response({'error': 'Product not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    if quantity <= 0:
+        return Response({'error': 'Invalid quantity'}, status=status.HTTP_400_BAD_REQUEST)
+
+    if quantity > product.quantity:
+        return Response({'error': 'This product is un available'}, status=status.HTTP_400_BAD_REQUEST)
+
+    serializer = OrderItemSerializer(data=request.data, context={'order': order, 'product': product})
+    if serializer.is_valid():
+        product.quantity -= quantity
+        product.save()
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def delete_order(request, order_id):
+    try:
+        order = Order.objects.get(order_id=order_id)
+    except Order.DoesNotExist:
+        return Response({'error': 'Order not found'}, status=status.HTTP_404_NOT_FOUND)
+    if order.user != request.user:
+        return Response({'error': 'You are not authorized to delete this order'}, status=status.HTTP_403_FORBIDDEN)
+    
+    order.delete()
+    return Response({'message': 'Deleted Successfully'},status=status.HTTP_204_NO_CONTENT)
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def delete_item(request, order_id, item_id):
+    try:
+        order = Order.objects.get(order_id=order_id)
+    except Order.DoesNotExist:
+        return Response({'error': 'Order not found'}, status=status.HTTP_404_NOT_FOUND)
+    try:
+        order_item = OrderItem.objects.get(order=order, order_item_id=item_id)
+    except OrderItem.DoesNotExist:
+        return Response({'error': 'Item not found'}, status=status.HTTP_404_NOT_FOUND)
+    if order_item.order.user == request.user:
+        return Response({'error': 'You are not authorized to delete this item'}, status=status.HTTP_403_FORBIDDEN)
+    order_item.delete()
+    return Response(status=status.HTTP_204_NO_CONTENT)
+    
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def update_status(request, order_id):
+    try:
+        order = Order.objects.get(order_id=order_id)
+    except Order.DoesNotExist:
+        return Response({'error': 'Order not found'}, status=status.HTTP_404_NOT_FOUND)
+    # if order.user != request.user:
+    #     return Response({'error': 'You are not authorized to update this order'}, status=status.HTTP_403_FORBIDDEN)
+    
+    serializer = OrderSerializer(order, data=request.data, partial=True)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

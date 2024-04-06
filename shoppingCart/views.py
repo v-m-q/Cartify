@@ -37,9 +37,9 @@ def add_item(request):
     
     try:
         if (product.quantity == 0):
-            return Response({"error": "product is unavailable"}, status=status.HTTP_406_NOT_ACCEPTABL)
+            return Response({"error": "product is unavailable"}, status=status.HTTP_400_BAD_REQUEST)
         elif (quantity > product.quantity) :
-            return Response({"error": "Quantity is more than available"}, status=status.HTTP_406_NOT_ACCEPTABL)
+            return Response({"error": "Quantity is more than available"}, status=status.HTTP_400_BAD_REQUEST)
         cart, created = Cart.objects.get_or_create(user=request.user)
         cart_item, cart_item_created = CartItem.objects.get_or_create(cart=cart, product=product)
             
