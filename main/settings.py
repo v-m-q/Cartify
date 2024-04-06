@@ -66,8 +66,6 @@ STRIPE_SECRET_KEY_TEST = 'STRIPE_SECRET_KEY_TEST'
 STRIPE_WEBHOOK_SECRET_TEST = 'STRIPE_WEBHOOK_SECRET_TEST'
 PRODUCT_PRICE = 'PRODUCT_PRICE'
 
-WSGI_APPLICATION = 'core.wsgi.application'
-
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
@@ -113,7 +111,7 @@ MIDDLEWARE = [
 ]
 
 
-ALLOWED_HOSTS=['*',]
+ALLOWED_HOSTS=['.vercel.app']
              
 CORS_ORIGIN_ALLOW_ALL = True
 
@@ -148,11 +146,11 @@ REST_FRAMEWORK = {
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'cartify',
-        'USER': 'root',
-        'PASSWORD': '',
-        'HOST': 'localhost',
-        'PORT': '3306',
+        'NAME': 'defaultdb',
+        'USER': 'avnadmin',
+        'PASSWORD': 'AVNS_B0rG5zjpFG0fQ-Php0H',
+        'HOST': 'mysql-1655a44a-amelsheikh01-af19.a.aivencloud.com',
+        'PORT': '12282',
     }
 }
 
