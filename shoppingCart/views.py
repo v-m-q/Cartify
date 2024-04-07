@@ -48,6 +48,8 @@ def add_item(request):
         else:
             cart_item.quantity = quantity
             
+        product.quantity = product.quantity - quantity
+        product.save()
         cart_item.save()
             
         serializer = CartItemSerializer(cart_item)
@@ -64,6 +66,8 @@ def remove_item(request, cart_item_id):
     except CartItem.DoesNotExist:
         return Response({"error": "Cart item does not exist"}, status=status.HTTP_404_NOT_FOUND)
     
+    cart_item.product.quantity += cart_item.quantity
+    cart_item.product.save()
     cart_item.delete()
     return Response({" Deleted Successfully "},status=status.HTTP_204_NO_CONTENT)
 
