@@ -1,6 +1,7 @@
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.db import models
 from django.core.validators import RegexValidator
+from django.contrib.auth.models import PermissionsMixin
 # Create your models here.
 class CustomUserManager(BaseUserManager):
     
@@ -32,17 +33,16 @@ class CustomUserManager(BaseUserManager):
         if extra_fields.get("is_staff") is not True:
             raise ValueError(_("Superuser must have is_staff=True."))
         if extra_fields.get("is_superuser") is not True:
-            raise ValueError(_("Superuser must have is_superuser=True."))
+            raise ValueError(("Superuser must have is_superuser=True."))
         super_user = self.create_user(email=email, password=password, first_name=first_name, last_name=last_name)
         super_user.is_staff = True
         super_user.is_superuser = True
-        # super_user.gender = "M"
         super_user.save()
         return super_user
 
 
 
-class User(AbstractBaseUser):
+class User(AbstractBaseUser,PermissionsMixin):
 
     first_name = models.CharField(
         max_length=50,
