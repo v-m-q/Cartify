@@ -1,6 +1,7 @@
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.db import models
 from django.core.validators import RegexValidator
+from django.contrib.auth.models import PermissionsMixin
 # Create your models here.
 class CustomUserManager(BaseUserManager):
     def create_user(self, email,password,first_name,last_name,phone=None,address=None):
@@ -36,7 +37,7 @@ class CustomUserManager(BaseUserManager):
 
 
 
-class User(AbstractBaseUser):
+class User(AbstractBaseUser,PermissionsMixin):
 
     first_name = models.CharField(
         max_length=50,
