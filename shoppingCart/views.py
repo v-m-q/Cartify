@@ -14,12 +14,14 @@ from .serializers import CartItemSerializer, CartSerializer
 def get_cart(request):
     try:
         cart = Cart.objects.get(user=request.user)
-        serializer = CartSerializer(cart)
+        cart_items = cart.cartitem_set.filter(status='onCart')  # Filter only items with 'onCart' status
+        serializer = CartItemSerializer(cart_items, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
-    # except Cart.DoesNotExist:
-    #     return Response({'detail': 'Cart not found'}, status=status.HTTP_404_NOT_FOUND)
+    except Cart.DoesNotExist:
+        return Response({'detail': 'Cart not found'}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
         return Response({'detail': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
 
 
 @api_view(['POST'])
@@ -34,8 +36,10 @@ def add_item(request):
         return Response({"error": "Product does not exist"}, status=status.HTTP_404_NOT_FOUND)
     
     try:
-        if (quantity > product.quantity) :
-            return Response({"error": "Quantity is more than available"}, status=status.HTTP_404_NOT_FOUND)
+        if (product.quantity == 0):
+            return Response({"error": "product is unavailable"}, status=status.HTTP_400_BAD_REQUEST)
+        elif (quantity > product.quantity) :
+            return Response({"error": "Quantity is more than available"}, status=status.HTTP_400_BAD_REQUEST)
         cart, created = Cart.objects.get_or_create(user=request.user)
         cart_item, cart_item_created = CartItem.objects.get_or_create(cart=cart, product=product)
             
@@ -44,6 +48,8 @@ def add_item(request):
         else:
             cart_item.quantity = quantity
             
+        product.quantity = product.quantity - quantity
+        product.save()
         cart_item.save()
             
         serializer = CartItemSerializer(cart_item)
@@ -60,6 +66,8 @@ def remove_item(request, cart_item_id):
     except CartItem.DoesNotExist:
         return Response({"error": "Cart item does not exist"}, status=status.HTTP_404_NOT_FOUND)
     
+    cart_item.product.quantity += cart_item.quantity
+    cart_item.product.save()
     cart_item.delete()
     return Response({"Deleted Successfully"}, status=status.HTTP_204_NO_CONTENT)
 
@@ -77,6 +85,8 @@ def update_quantity(request, cart_item_id):
     
     if (new_quantity > cart_item.product.quantity) :
         return Response({"error": "Quantity is more than available"}, status=status.HTTP_404_NOT_FOUND)
+    elif (new_quantity == 0 or new_quantity < 0):
+        return Response({"error": "Invalid quantity"}, status=status.HTTP_404_NOT_FOUND)
     cart_item.quantity = new_quantity
     cart_item.save()
     
@@ -97,3 +107,28 @@ def get_total_price(request):
     except Exception as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def change_cart_item_status(request, cart_item_id):
+    try:
+        cart_item = CartItem.objects.get(pk=cart_item_id)
+        if cart_item.cart.user == request.user:
+            new_status = request.data.get('status', None)
+            if not new_status:
+                return Response({'detail': 'New status is required.'}, status=status.HTTP_400_BAD_REQUEST)
+    
+            if new_status not in ['onCart', 'done']:
+                return Response({'detail': 'Status should be either "onCart" or "done".'}, status=status.HTTP_400_BAD_REQUEST)
+
+            cart_item.status = new_status
+            cart_item.save()
+
+            serializer = CartItemSerializer(cart_item)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response({'detail': 'You are not allowed to change this item.'}, status=status.HTTP_403_FORBIDDEN)
+    except CartItem.DoesNotExist:
+        return Response({'detail': 'Cart item not found'}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({'detail': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

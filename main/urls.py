@@ -32,7 +32,8 @@ urlpatterns = [
     path('images/', include('images.urls')),
     path('categories/', include('categories.urls')),
     path('wishlist/', include('wishlist.urls')),
-    path('cart/',include('shoppingCart.urls'))
+    path('cart/',include('shoppingCart.urls')),
+    path('orders/',include ('orders.urls'))
 ]
 
 BASE_DIR = Path(__file__).resolve().parent.parent
