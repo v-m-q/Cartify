@@ -5,7 +5,6 @@ from user.serializer import RegisterSerializer
 
 class CartItemSerializer(serializers.ModelSerializer):
     product = ProductSerializer(many=False) 
-
     class Meta:
         model = CartItem
         fields = '__all__'

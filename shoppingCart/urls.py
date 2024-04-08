@@ -8,6 +8,6 @@ path ('remove/<int:cart_item_id>/', remove_item , name='remove_from_cart'),
 path ('update/<int:cart_item_id>/', update_quantity , name='update_quantity'),
 path ('get_total_price/' ,get_total_price , name='get_total_price' ),
 path ('cart_item/<int:cart_item_id>/', change_cart_item_status , name='change_cart_item_status' ),
-path ('checkout/' , checkout , name='checkout' ),
+path ('checkout/' , checkout , name='checkout' )
 
 ]
