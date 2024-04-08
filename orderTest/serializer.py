@@ -8,3 +8,5 @@ class Order2Serializer(serializers.ModelSerializer):
     class Meta:
         model = Order2
         fields = ['order_id', 'user', 'cart_items', 'status', 'created_at']
+
+

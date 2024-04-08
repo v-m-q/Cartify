@@ -6,6 +6,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 from products.models import Product
 from .models import Cart , CartItem 
+from orderTest.models import Order2
+from orderTest.serializer import Order2Serializer
 from .serializers import CartItemSerializer , CartSerializer
 
 # Create your views here.
@@ -15,7 +17,7 @@ from .serializers import CartItemSerializer , CartSerializer
 def get_cart(request):
     try:
         cart = Cart.objects.get(user=request.user)
-        cart_items = cart.cartitem_set.filter(status='onCart')  # Filter only items with 'onCart' status
+        cart_items = cart.cartitem_set.filter(status='onCart') 
         serializer = CartItemSerializer(cart_items, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     except Cart.DoesNotExist:
@@ -48,6 +50,8 @@ def add_item(request):
         else:
             cart_item.quantity = quantity
             
+        product.quantity = product.quantity - quantity
+        product.save()
         cart_item.save()
             
         serializer = CartItemSerializer(cart_item)
@@ -64,6 +68,8 @@ def remove_item(request, cart_item_id):
     except CartItem.DoesNotExist:
         return Response({"error": "Cart item does not exist"}, status=status.HTTP_404_NOT_FOUND)
     
+    cart_item.product.quantity += cart_item.quantity
+    cart_item.product.save()
     cart_item.delete()
     return Response({" Deleted Successfully "},status=status.HTTP_204_NO_CONTENT)
 
@@ -125,3 +131,24 @@ def change_cart_item_status(request, cart_item_id):
         return Response({'detail': 'Cart item not found'}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
         return Response({'detail': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+
+def checkout(request):
+    try:
+        user_cart = Cart.objects.get(user=request.user)
+    except Cart.DoesNotExist:
+        return Response({'detail': 'Cart not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+    order = Order2.objects.create(user=request.user, status='pending')
+        
+    for cart_item in user_cart.cartitem_set.all():
+        order.cart_items.add(cart_item)
+        cart_item.status= "done"
+        
+    user_cart.cartitem_set.all().delete()  
+    
+    serializer = Order2Serializer(order)
+    return Response(serializer.data, status=status.HTTP_201_CREATED)
