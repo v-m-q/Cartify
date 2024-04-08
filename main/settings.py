@@ -14,10 +14,15 @@ from datetime import timedelta
 from pathlib import Path
 import environ
 import os
+from dotenv import load_dotenv
+
 env = environ.Env()
 environ.Env.read_env()
 
-# load_dotenv()
+
+# Load environment variables from .env file
+load_dotenv()
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -53,8 +58,6 @@ INSTALLED_APPS = [
     'orders',
     'wishlist',
     'rating',
-    'rest_framework',
-    'django_filters',
     'shoppingCart',
     'payment',
     'images',
@@ -114,7 +117,7 @@ MIDDLEWARE = [
 ]
 
 
-ALLOWED_HOSTS=['.vercel.app']
+ALLOWED_HOSTS=['*']
              
 CORS_ORIGIN_ALLOW_ALL = True
 
@@ -149,11 +152,11 @@ REST_FRAMEWORK = {
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'defaultdb',
-        'USER': 'avnadmin',
-        'PASSWORD': 'AVNS_B0rG5zjpFG0fQ-Php0H',
-        'HOST': 'mysql-1655a44a-amelsheikh01-af19.a.aivencloud.com',
-        'PORT': '12282',
+        'NAME': os.getenv('DB_NAME'),
+        'USER': os.getenv('USER'),
+        'PASSWORD': os.getenv('PASSWORD'),
+        'HOST': os.getenv('HOST'),
+        'PORT': os.getenv('PORT'),
     }
 }
 
@@ -195,7 +198,7 @@ USE_TZ = True
 STATIC_URL = 'static/'
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static')
+    # os.path.join(BASE_DIR, 'static')
 ]
 
 MEDIA_URL = 'media/'

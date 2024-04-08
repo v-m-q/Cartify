@@ -2,9 +2,12 @@
 venv/
 
 # environment variables
-main/.env
+.env
 
 main/__pycache__
+
+rating/__pycache__
+rating/migrations/__pycache__
 
 orders/__pycache__
 orders/migrations/__pycache__

@@ -3,17 +3,14 @@ from categories.models import Category
 from django.db.models import Avg
 
 class Product(models.Model):
-  product_id  = models.BigAutoField(auto_created=True, primary_key=True, serialize=False, null=False)
+  # product_id  = models.BigAutoField(auto_created=True, primary_key=True, serialize=False, null=False)
   name        = models.CharField(max_length=50)
   description = models.TextField()
   price       = models.DecimalField(max_digits = 7 , decimal_places = 2)
   quantity    = models.IntegerField()
   thumbnail   = models.ImageField(default='fallback.png', blank=True)
   avg_rate    = models.DecimalField(max_digits=3, decimal_places=1, blank=True, default=0)
-  category_id = models.ForeignKey(
-    Category,
-    on_delete=models.CASCADE
-  )
+  category    = models.ForeignKey(Category, on_delete=models.CASCADE)
 
   def calculate_avg_rating(self):
     avg_rating = self.rating_set.aggregate(avg_rating=Avg('value'))['avg_rating']
