@@ -143,7 +143,7 @@ def change_cart_item_status(request, cart_item_id):
     except Exception as e:
         return Response({'detail': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-@api_view(['GET'])
+@api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def checkout(request):
     try:
@@ -154,8 +154,9 @@ def checkout(request):
 
     items = get_cart_item(user)
     user_instance = User.objects.get(email=user.email)
-    
-    order_serializer = OrderSerializer(data={'user': user_instance.pk, 'status': 'pending'})
+    total_price = request.data.get('total_price')  
+    print(total_price)
+    order_serializer = OrderSerializer(data={'user': user_instance.pk,'total_price':total_price, 'status': 'pending'})
 
     if order_serializer.is_valid():
         order = order_serializer.save()  
