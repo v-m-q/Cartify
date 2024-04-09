@@ -16,9 +16,9 @@ def getProducts(request):
 
 
 @api_view(['GET'])
-def GetProduct(request, ProductId):
+def GetProduct(request, product_id):
     try:
-        product = Product.objects.get(product_id=ProductId)
+        product = Product.objects.get(id=product_id)
         serializer = ProductSerializer(product)
         return Response(serializer.data, status=status.HTTP_200_OK)
     except Product.DoesNotExist:
@@ -26,9 +26,9 @@ def GetProduct(request, ProductId):
 
 
 @api_view(['GET'])
-def getProductsByCategory(request, CategoryId):
+def getProductsByCategory(request, category_id):
     try:
-        products = Product.objects.filter(category_id=CategoryId)
+        products = Product.objects.filter(id=category_id)
         serializer = ProductSerializer(products, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     except:
