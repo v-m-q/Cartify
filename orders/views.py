@@ -5,7 +5,7 @@ from rest_framework import status
 from .models import Order, OrderItem
 from products.models import Product
 from user.models import User
-from .serializers import OrderItemSerializer, OrderSerializer
+from .serializers import OrderItemsSerializer, OrderSerializer
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -13,6 +13,57 @@ def get_orders(request):
     orders = Order.objects.filter(user=request.user)  
     serializer = OrderSerializer(orders, many=True)
     return Response({'orders': serializer.data})
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def update_status(request, order_id):
+    try:
+        order = Order.objects.get(order_id=order_id)
+    except Order.DoesNotExist:
+        return Response({'error': 'Order not found'}, status=status.HTTP_404_NOT_FOUND)
+    if order.user != request.user:
+        return Response({'error': 'You are not authorized to update this order'}, status=status.HTTP_403_FORBIDDEN)
+    
+    serializer = OrderSerializer(order, data=request.data, partial=True)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_order_items(request,order_id):
+    order_id = order_id
+    if not order_id:
+        return Response({'error': 'Order ID is required'}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        order = Order.objects.get(order_id=order_id)
+    except Order.DoesNotExist:
+        return Response({'error': 'Order not found'}, status=status.HTTP_404_NOT_FOUND)
+    if order.user != request.user:
+        return Response({'error': 'You are not authorized to view this order'}, status=status.HTTP_403_FORBIDDEN)
+    items = OrderItem.objects.filter(order_id = order_id)
+
+    serializer = OrderItemsSerializer(items, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_order_item(request, order_id, item_id):
+    order_item_id = item_id
+    if not order_item_id:
+        return Response({'error': 'Order Item ID is required'}, status=status.HTTP_400_BAD_REQUEST)
+    try:
+        order_item = OrderItem.objects.get(order_item_id=order_item_id)
+    except OrderItem.DoesNotExist:
+        return Response({'error': 'Order Item not found'}, status=status.HTTP_404_NOT_FOUND)
+    
+    if order_item.order.user != request.user:
+        return Response({'error': 'You are not authorized to view this order item'}, status=status.HTTP_403_FORBIDDEN)
+    
+    serializer = OrderItemsSerializer(order_item)
+    return Response(serializer.data, status=status.HTTP_200_OK)
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -51,7 +102,7 @@ def add_item(request, order_id):
     if quantity > product.quantity:
         return Response({'error': 'This product is un available'}, status=status.HTTP_400_BAD_REQUEST)
 
-    serializer = OrderItemSerializer(data=request.data, context={'order': order, 'product': product})
+    serializer = OrderItemsSerializer(data=request.data, context={'order': order, 'product': product})
     if serializer.is_valid():
         product.quantity -= quantity
         product.save()
@@ -88,18 +139,3 @@ def delete_item(request, order_id, item_id):
     order_item.delete()
     return Response(status=status.HTTP_204_NO_CONTENT)
     
-@api_view(['PUT'])
-@permission_classes([IsAuthenticated])
-def update_status(request, order_id):
-    try:
-        order = Order.objects.get(order_id=order_id)
-    except Order.DoesNotExist:
-        return Response({'error': 'Order not found'}, status=status.HTTP_404_NOT_FOUND)
-    # if order.user != request.user:
-    #     return Response({'error': 'You are not authorized to update this order'}, status=status.HTTP_403_FORBIDDEN)
-    
-    serializer = OrderSerializer(order, data=request.data, partial=True)
-    if serializer.is_valid():
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_200_OK)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
