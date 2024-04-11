@@ -6,14 +6,20 @@ from .models import Order, OrderItem
 from products.models import Product
 from user.models import User
 from .serializers import OrderItemsSerializer, OrderSerializer
+from rest_framework.pagination import PageNumberPagination
+class StandardResultsSetPagination(PageNumberPagination):
+    page_size = 4
+    page_size_query_param = 'page_size'
+    max_page_size = 12
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_orders(request):
     orders = Order.objects.filter(user=request.user)  
-    serializer = OrderSerializer(orders, many=True)
-    return Response({'orders': serializer.data})
-
+    paginator = StandardResultsSetPagination()
+    orders_for_page = paginator.paginate_queryset(orders,request)
+    serializer = OrderSerializer(orders_for_page, many=True)
+    return paginator.get_paginated_response(serializer.data)
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
 def update_status(request, order_id):
