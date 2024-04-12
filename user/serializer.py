@@ -4,8 +4,6 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework.validators import UniqueValidator
 from django.core.validators import RegexValidator
 
-
-
 class LoginSerializer(TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, user):

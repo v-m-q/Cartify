@@ -9,7 +9,7 @@ from products.serializer import ProductSerializer
 def getHomeData(request):
     try:
         highest_rated_products = Product.objects.order_by('-avg_rate')[:3]
-        latest_products = Product.objects.order_by('-id')[:9]
+        latest_products = Product.objects.order_by('-id')[:8]
         
         highest_serializer = ProductSerializer(highest_rated_products, many=True)
         latest_serializer = ProductSerializer(latest_products, many=True)

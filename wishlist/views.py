@@ -4,6 +4,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from products.models import Product
 from .models import Wishlist
+from django.http import JsonResponse
 from .serializer import WishlistSerializer
 from rest_framework.pagination import PageNumberPagination
 class StandardResultsSetPagination(PageNumberPagination):

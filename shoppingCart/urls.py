@@ -11,3 +11,4 @@ path ('cart_item/<int:cart_item_id>/', change_cart_item_status , name='change_ca
 path ('checkout/' , checkout , name='checkout' )
 
 ]
+

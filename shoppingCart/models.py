@@ -4,9 +4,8 @@ from user.models import User
 from django.core.validators import MinValueValidator
 
 # Create your models here.
-
-class Cart(models.Model):
-    cart_id = models.AutoField(primary_key=True)
+class Cart (models.Model):
+    # cart_id = models.AutoField(primary_key=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     
@@ -21,7 +20,7 @@ class CartItem(models.Model):
         ('onCart', 'OnCart'),
         ('done', 'Done')
     ]
-    cartitem_id = models.AutoField(primary_key=True)
+    # cartitem_id = models.AutoField(primary_key=True)
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=1, validators=[MinValueValidator(1)])

@@ -1,5 +1,5 @@
 from rest_framework.decorators import api_view,permission_classes
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated , IsAdminUser
 from rest_framework.response import Response
 from rest_framework import status
 from .models import Order, OrderItem
@@ -21,7 +21,7 @@ def get_orders(request):
     serializer = OrderSerializer(orders_for_page, many=True)
     return paginator.get_paginated_response(serializer.data)
 @api_view(['PUT'])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAdminUser])
 def update_status(request, order_id):
     try:
         order = Order.objects.get(order_id=order_id)

@@ -5,9 +5,9 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 from products.models import Product
-from user.models import User
-from .models import Cart , CartItem 
+from .models import Cart, CartItem 
 from .serializers import CartItemSerializer , CartSerializer
+from user.models import User
 from orders.models import Order , OrderItem
 from orders.serializers import OrderItemsSerializer , OrderSerializer
 
@@ -37,6 +37,7 @@ def get_cart(request):
         return Response({'detail': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
 
+
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def add_item(request):
@@ -61,6 +62,8 @@ def add_item(request):
         else:
             cart_item.quantity = quantity
             
+        product.quantity = product.quantity - quantity
+        product.save()
         # product.quantity = product.quantity - quantity
         # product.save()
         cart_item.save()
@@ -79,10 +82,14 @@ def remove_item(request, cart_item_id):
     except CartItem.DoesNotExist:
         return Response({"error": "Cart item does not exist"}, status=status.HTTP_404_NOT_FOUND)
     
+    cart_item.product.quantity += cart_item.quantity
+    cart_item.product.save()
     # cart_item.product.quantity += cart_item.quantity
     # cart_item.product.save()
     cart_item.delete()
-    return Response({" Deleted Successfully "},status=status.HTTP_204_NO_CONTENT)
+    return Response({"Deleted Successfully"}, status=status.HTTP_204_NO_CONTENT)
+
+
 
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
@@ -105,13 +112,14 @@ def update_quantity(request, cart_item_id):
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_total_price(request):
     try:
         cart = Cart.objects.get(user=request.user)
         total_price = cart.total_price()
-        return Response({"total_price": total_price}, status=status.HTTP_200_OK)
+        return Response({"total_price": total_price }, status=status.HTTP_200_OK)
     except Cart.DoesNotExist:
         return Response({"error": "Cart does not exist"}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
@@ -164,13 +172,13 @@ def checkout(request):
         for item in items:
             order_item_data = {
                 'order': order.pk,  
-                'product': item['product']['product_id'],  
+                'product': item['product']['id'],  
                 'quantity': item['quantity']  
             }
             order_item_serializer = OrderItemsSerializer(data=order_item_data)
             if order_item_serializer.is_valid():
                 order_item_serializer.save()  
-                product_order = Product.objects.get(product_id = item['product']['product_id'])
+                product_order = Product.objects.get(id = item['product']['id'])
                 print(product_order)
                 product_order.quantity = product_order.quantity - item['quantity']
                 product_order.save()

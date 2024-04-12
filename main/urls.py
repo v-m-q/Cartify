@@ -16,16 +16,26 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.conf.urls.static import static 
+from . import views
+from pathlib import Path
+import os
 
 from. import views
 
 urlpatterns = [
+    path('', views.getHomeData),
+    path('pay/', include('payment.urls')),
     path('admin/', admin.site.urls),
+    path('account/', include('user.urls')),
     path('products/', include('products.urls')),
     path('product/', include('rating.urls')),
+    path('images/', include('images.urls')),
     path('categories/', include('categories.urls')),
-    path('account/',include('user.urls')),
     path('wishlist/', include('wishlist.urls')),
     path('cart/',include('shoppingCart.urls')),
     path('orders/',include ('orders.urls')),
 ]
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+urlpatterns += static('media/', document_root=os.path.join(BASE_DIR, 'media'))
