@@ -151,7 +151,19 @@ def change_cart_item_status(request, cart_item_id):
     except Exception as e:
         return Response({'detail': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-@api_view(['GET'])
+# Create your views here.
+def get_cart_item(user):
+    try:
+        cart = Cart.objects.get(user=user)
+        cart_items = cart.cartitem_set.filter(status='onCart') 
+        serializer = CartItemSerializer(cart_items, many=True)
+        return serializer.data
+    except Cart.DoesNotExist:
+        return []
+    except Exception as e:
+        return []
+    
+@api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def checkout(request):
     try:
@@ -162,8 +174,11 @@ def checkout(request):
 
     items = get_cart_item(user)
     user_instance = User.objects.get(email=user.email)
+    total_price = request.data.get('total_price')  
+    print(total_price)
+    order_serializer = OrderSerializer(data={'user': user_instance.pk,'total_price':total_price, 'status': 'pending'})
     
-    order_serializer = OrderSerializer(data={'user': user_instance.pk, 'status': 'pending'})
+    # order_serializer = OrderSerializer(data={'user': user_instance.pk, 'status': 'pending'})
 
     if order_serializer.is_valid():
         order = order_serializer.save()  
@@ -171,13 +186,13 @@ def checkout(request):
         for item in items:
             order_item_data = {
                 'order': order.pk,  
-                'product': item['product']['product_id'],  
+                'product': item['product']['id'],  
                 'quantity': item['quantity']  
             }
             order_item_serializer = OrderItemsSerializer(data=order_item_data)
             if order_item_serializer.is_valid():
                 order_item_serializer.save()  
-                product_order = Product.objects.get(product_id = item['product']['product_id'])
+                product_order = Product.objects.get(id = item['product']['id'])
                 print(product_order)
                 product_order.quantity = product_order.quantity - item['quantity']
                 product_order.save()
