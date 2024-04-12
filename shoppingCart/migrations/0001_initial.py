@@ -29,6 +29,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('cartitem_id', models.AutoField(primary_key=True, serialize=False)),
                 ('quantity', models.PositiveIntegerField(default=1, validators=[django.core.validators.MinValueValidator(1)])),
+                ('status', models.CharField(choices=[('onCart', 'OnCart'), ('done', 'Done')], default='onCart', max_length=10)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('cart', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='shoppingCart.cart')),
                 ('product', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='products.product')),
