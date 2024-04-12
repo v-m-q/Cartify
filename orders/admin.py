@@ -17,7 +17,8 @@ class ReadOnlyModelAdmin(admin.ModelAdmin):
         return False
 
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ['id', 'user', 'status', 'created_at','total_price']
+    # list_display = ['id', 'user', 'status', 'created_at','total_price']
+    list_display = ['order_id', 'user', 'status', 'created_at','total_price']
     readonly_fields = ['user', 'created_at','total_price']
 
     def has_change_permission(self, request, obj=None):

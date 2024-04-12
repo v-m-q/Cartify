@@ -151,18 +151,6 @@ def change_cart_item_status(request, cart_item_id):
     except Exception as e:
         return Response({'detail': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-# Create your views here.
-def get_cart_item(user):
-    try:
-        cart = Cart.objects.get(user=user)
-        cart_items = cart.cartitem_set.filter(status='onCart') 
-        serializer = CartItemSerializer(cart_items, many=True)
-        return serializer.data
-    except Cart.DoesNotExist:
-        return []
-    except Exception as e:
-        return []
-    
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def checkout(request):
@@ -177,8 +165,6 @@ def checkout(request):
     total_price = request.data.get('total_price')  
     print(total_price)
     order_serializer = OrderSerializer(data={'user': user_instance.pk,'total_price':total_price, 'status': 'pending'})
-    
-    # order_serializer = OrderSerializer(data={'user': user_instance.pk, 'status': 'pending'})
 
     if order_serializer.is_valid():
         order = order_serializer.save()  
