@@ -2,6 +2,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
+from products.models import Product
 from .models import Wishlist
 from .serializer import WishlistSerializer
 
@@ -19,22 +20,31 @@ def getProductsByWishlist(request):
 @permission_classes([IsAuthenticated])
 def addProductsToWishlist(request):
     try:
-        serializer = WishlistSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save(user=request.user)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-    except:
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        product_id = request.data.get('product')
+        product = Product.objects.get(product_id=product_id)
+        
+        likedProduct = Wishlist.objects.filter(product=product, user=request.user)
+        
+        if not likedProduct:
+            serializer = WishlistSerializer(data=request.data)
+            if serializer.is_valid():
+                serializer.save(user=request.user)
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response({"message": "Product already exists in the wishlist"})
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['DELETE'])
 @permission_classes([IsAuthenticated])
 def removeProductsToWishlist(request):
     try:
         product_id = request.data.get('product')
-        wishlist_item = Wishlist.objects.get(user=request.user, product_id=product_id)
-        wishlist_item.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-    except Wishlist.DoesNotExist:
-        return Response({"error": "Wishlist item does not exist."}, status=status.HTTP_404_NOT_FOUND)
+        wishlist_item = Wishlist.objects.filter(user=request.user, product_id=product_id)
+        if wishlist_item:
+            wishlist_item.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        else:
+            return Response({"error": "Wishlist item does not exist."})
     except Exception as e:
         return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
