@@ -5,14 +5,21 @@ from rest_framework.permissions import IsAuthenticated
 from products.models import Product
 from .models import Wishlist
 from .serializer import WishlistSerializer
+from rest_framework.pagination import PageNumberPagination
+class StandardResultsSetPagination(PageNumberPagination):
+    page_size = 10
+    page_size_query_param = 'page_size'
+    max_page_size = 16
 
 @api_view(['GET'])
 
 def getProductsByWishlist(request):
     try:
         wishlist_items = Wishlist.objects.filter(user=request.user)
-        serializer = WishlistSerializer(wishlist_items, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        paginator = StandardResultsSetPagination()
+        wishlist_items_for_page = paginator.paginate_queryset(wishlist_items,request)
+        serializer = WishlistSerializer(wishlist_items_for_page, many=True)
+        return paginator.get_paginated_response(serializer.data)
     except Wishlist.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
