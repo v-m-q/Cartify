@@ -1,13 +1,17 @@
 {
-  "builds": [{
-      "src": "main/wsgi.py",
-      "use": "@vercel/python",
-      "config": { "maxLambdaSize": "15mb", "runtime": "python3.10" }
-  }],
-  "routes": [
+    "devCommand": "uvicorn main:app --host 0.0.0.0 --port 8000",
+    "builds": [
       {
-          "src": "/(.*)",
-          "dest": "main/wsgi.py"
+        "src": "main/main.py",
+        "use": "@vercel/python"
       }
-  ]
-}
+    ],
+    "routes": [
+      {
+        "src": "/(.*)",
+        "dest": "main/main.py"
+      }
+    ],
+    "installCommand": "pip install -r requirements.txt"
+  }
+  
