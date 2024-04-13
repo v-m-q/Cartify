@@ -73,6 +73,7 @@ class User(AbstractBaseUser,PermissionsMixin):
                 code='nomatch')
         ])
     
+    # user_id = models.AutoField(primary_key=True)
     phone = models.CharField(max_length=11, null=True,blank=True)
     address = models.CharField(max_length=255, null=True,blank=True)
     is_active = models.BooleanField(default=True)

@@ -15,7 +15,7 @@ class StandardResultsSetPagination(PageNumberPagination):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_orders(request):
-    orders = Order.objects.filter(user=request.user)  
+    orders = Order.objects.filter(user_id=request.user)  
     paginator = StandardResultsSetPagination()
     orders_for_page = paginator.paginate_queryset(orders,request)
     serializer = OrderSerializer(orders_for_page, many=True)
@@ -44,7 +44,7 @@ def get_order_items(request,order_id):
         return Response({'error': 'Order ID is required'}, status=status.HTTP_400_BAD_REQUEST)
 
     try:
-        order = Order.objects.get(order_id=order_id)
+        order = Order.objects.get(id=order_id)
     except Order.DoesNotExist:
         return Response({'error': 'Order not found'}, status=status.HTTP_404_NOT_FOUND)
     if order.user != request.user:
@@ -85,7 +85,7 @@ def create_order(request):
 @permission_classes([IsAuthenticated])
 def add_item(request, order_id):
     try:
-        order = Order.objects.get(order_id=order_id)
+        order = Order.objects.get(id=order_id)
     except Order.DoesNotExist:
         return Response({'error': 'Order not found'}, status=status.HTTP_404_NOT_FOUND)
     
@@ -98,7 +98,7 @@ def add_item(request, order_id):
         return Response({'error': 'Invalid quantity'}, status=status.HTTP_400_BAD_REQUEST)
 
     try:
-        product = Product.objects.get(product_id=product_id)
+        product = Product.objects.get(id=product_id)
     except Product.DoesNotExist:
         return Response({'error': 'Product not found'}, status=status.HTTP_404_NOT_FOUND)
 
@@ -120,7 +120,7 @@ def add_item(request, order_id):
 @permission_classes([IsAuthenticated])
 def delete_order(request, order_id):
     try:
-        order = Order.objects.get(order_id=order_id)
+        order = Order.objects.get(id=order_id)
     except Order.DoesNotExist:
         return Response({'error': 'Order not found'}, status=status.HTTP_404_NOT_FOUND)
     if order.user != request.user:
@@ -133,15 +133,15 @@ def delete_order(request, order_id):
 @permission_classes([IsAuthenticated])
 def delete_item(request, order_id, item_id):
     try:
-        order = Order.objects.get(order_id=order_id)
+        order = Order.objects.get(id=order_id)
     except Order.DoesNotExist:
         return Response({'error': 'Order not found'}, status=status.HTTP_404_NOT_FOUND)
     try:
-        order_item = OrderItem.objects.get(order=order, order_item_id=item_id)
+        order_item = OrderItem.objects.get(order=order, id=item_id)
     except OrderItem.DoesNotExist:
         return Response({'error': 'Item not found'}, status=status.HTTP_404_NOT_FOUND)
-    if order_item.order.user == request.user:
+    if order_item.order.user != request.user:
         return Response({'error': 'You are not authorized to delete this item'}, status=status.HTTP_403_FORBIDDEN)
     order_item.delete()
-    return Response(status=status.HTTP_204_NO_CONTENT)
+    return Response({'message': 'Deleted Successfully'},status=status.HTTP_204_NO_CONTENT)
     

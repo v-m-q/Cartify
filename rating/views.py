@@ -12,12 +12,12 @@ def rate_product(request, product_id):
     try:
         product = Product.objects.get(product_id=product_id)
 
-        item = Rating.objects.filter(product=product, user=request.user)
+        item = Rating.objects.filter(product=product, user_id=request.user)
 
         if not item:
             serializer = RatingSerializer(data=request.data)
             if serializer.is_valid():
-                serializer.save(user=request.user, product=product)
+                serializer.save(user_id=request.user, product=product)
 
                 product.avg_rate = product.calculate_avg_rating()
                 product.save()

@@ -3,13 +3,20 @@ from categories.serializer import CategorySerializer
 from .models import Product
 
 class ProductSerializer(serializers.ModelSerializer):
-    category_name = serializers.SerializerMethodField()
+    # category_name = serializers.SerializerMethodField()
 
     class Meta:
         model=Product
-        fields=['product_id', 'name', 'description', 'price', 'quantity', 'avg_rate', 'thumbnail', 'category_id' , 'category_name']
+        fields='__all__' #, 'name', 'description', 'price', 'quantity', 'avg_rate', 'thumbnail', 'category_id' , 'category_name']
+        # fields=['product_id', 'name', 'description', 'price', 'quantity', 'avg_rate', 'thumbnail', 'category_id' , 'category_name']
 
-    def get_category_name(self, obj):
-        category = obj.category_id
-        serializer = CategorySerializer(category)
-        return serializer.data
+    def to_representation(self, instance):
+        rep = super(ProductSerializer, self).to_representation(instance)
+        rep['category'] = instance.category.name
+        return rep
+
+
+    # def get_category_name(self, obj):
+    #     category = obj.category_id
+    #     serializer = CategorySerializer(category)
+    #     return serializer.data

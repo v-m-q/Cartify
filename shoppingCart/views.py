@@ -14,7 +14,7 @@ from orders.serializers import OrderItemsSerializer , OrderSerializer
 # Create your views here.
 def get_cart_item(user):
     try:
-        cart = Cart.objects.get(user=user)
+        cart = Cart.objects.get(user_id=user)
         cart_items = cart.cartitem_set.filter(status='onCart') 
         serializer = CartItemSerializer(cart_items, many=True)
         return serializer.data
@@ -27,7 +27,7 @@ def get_cart_item(user):
 @permission_classes([IsAuthenticated])
 def get_cart(request):
     try:
-        cart = Cart.objects.get(user=request.user)
+        cart = Cart.objects.get(user_id=request.user)
         cart_items = cart.cartitem_set.filter(status='onCart') 
         serializer = CartItemSerializer(cart_items, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -54,7 +54,7 @@ def add_item(request):
             return Response({"error": "product is unavailable"}, status=status.HTTP_400_BAD_REQUEST)
         elif (quantity > product.quantity) :
             return Response({"error": "Quantity is more than available"}, status=status.HTTP_400_BAD_REQUEST)
-        cart, created = Cart.objects.get_or_create(user=request.user)
+        cart, created = Cart.objects.get_or_create(user_id=request.user.id)
         cart_item, cart_item_created = CartItem.objects.get_or_create(cart=cart, product=product)
             
         if not cart_item_created:
@@ -117,7 +117,7 @@ def update_quantity(request, cart_item_id):
 @permission_classes([IsAuthenticated])
 def get_total_price(request):
     try:
-        cart = Cart.objects.get(user=request.user)
+        cart = Cart.objects.get(user_id=request.user)
         total_price = cart.total_price()
         return Response({"total_price": total_price }, status=status.HTTP_200_OK)
     except Cart.DoesNotExist:
@@ -156,7 +156,7 @@ def change_cart_item_status(request, cart_item_id):
 def checkout(request):
     try:
         user = request.user
-        user_cart = get_object_or_404(Cart, user=user)
+        user_cart = get_object_or_404(Cart, user_id=user)
     except Cart.DoesNotExist:
         return Response({'detail': 'Cart not found'}, status=status.HTTP_404_NOT_FOUND)
 

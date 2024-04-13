@@ -24,7 +24,7 @@ def getProducts(request):
 
 
 @api_view(['GET'])
-def GetProduct(request, id):
+def GetProduct(request, product_id):
     try:
         product = Product.objects.get(id=product_id)
         serializer = ProductSerializer(product)
