@@ -26,26 +26,20 @@ def getProductsByWishlist(request):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def addProductsToWishlist(request):
-    # Assuming the request data contains 'product_id'
-    product_id = request.data.get('product')
-
-    if not product_id:
-        return Response({'error': 'Product ID is required'}, status=400)
-
-    # Assuming the user is available through request.user
-    user = request.user
-
-    # Check if the product is already in the wishlist
-    if Wishlist.objects.filter(user=user, product_id=product_id).exists():
-        return Response({'error': 'Product already in wishlist'}, status=400)
-
-    # Create a new Wishlist item
-    wishlist_item = Wishlist.objects.create(user=user, product_id=product_id)
-
-    # Serialize the created item
-    serializer = WishlistSerializer(wishlist_item)
-
-    return Response(serializer.data, status=201)
+    try:
+        product_id = request.data.get('product')
+        product = Product.objects.get(id=product_id)
+        likedProduct = Wishlist.objects.filter(product=product, user=request.user)
+        if not likedProduct:
+            wishlist_item = Wishlist.objects.create(user=request.user, product_id=product_id)
+            serializer = WishlistSerializer(wishlist_item)
+            # if serializer.is_valid():
+                # serializer.save(user=request.user)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response({"message": "Product already exists in the wishlist"})
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['DELETE'])
