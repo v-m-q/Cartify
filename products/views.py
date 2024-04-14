@@ -36,7 +36,7 @@ def GetProduct(request, product_id):
 @api_view(['GET'])
 def getProductsByCategory(request, category_id):
     try:
-        products = Product.objects.filter(id=category_id)
+        products = Product.objects.filter(category_id=category_id)
         paginator = StandardResultsSetPagination()
         productd_for_page = paginator.paginate_queryset(products,request)
         serializer = ProductSerializer(productd_for_page, many=True)

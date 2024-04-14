@@ -4,31 +4,5 @@ venv/
 # environment variables
 .env
 
-main/__pycache__
 
-rating/__pycache__
-rating/migrations/__pycache__
-
-orders/__pycache__
-orders/migrations/__pycache__
-
-products/__pycache__
-products/migrations/__pycache__
-
-images/__pycache__
-images/migrations/__pycache__
-
-shoppingCart/__pycache__
-shoppingCart/migrations/__pycache__
-
-wishlist/__pycache__
-wishlist/migrations/__pycache__
-
-payment/__pycache__
-payment/migrations/__pycache__
-
-user/__pycache__
-user/migrations/__pycache__
-
-categories/__pycache__
-categories/migrations/__pycache__
+__pycache__
