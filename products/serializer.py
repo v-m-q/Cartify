@@ -13,6 +13,7 @@ class ProductSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         rep = super(ProductSerializer, self).to_representation(instance)
         rep['category'] = instance.category.name
+        rep['category_id'] = instance.category.id
         return rep
 
 

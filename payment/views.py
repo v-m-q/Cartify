@@ -11,18 +11,24 @@ import stripe
 import time, json
 from django.views.decorators.csrf import csrf_exempt
 
+import environ
+import os
+from dotenv import load_dotenv
 
+env = environ.Env()
+environ.Env.read_env()
+load_dotenv()
 
 # @api_view(['POST'])
 # @permission_classes([IsAuthenticated])
 @csrf_exempt
 def purchase(request):
 	# cart_id = request.data.get('cart_id')
-	stripe.api_key = 'Your-Key'
+	stripe.api_key = os.getenv('STRIPE_SECRET_KEY')
 	price = stripe.Price.create(
 				unit_amount=int(json.loads(request.body)['total_price'] * 100),  # order total price in cents
 				currency='usd',  
-    		product='Product_key',  
+    		product=os.getenv('STRIPE_PRODUCT_ID'),  
 	)
 	if request.method == 'POST':
 		checkout_session = stripe.checkout.Session.create(
