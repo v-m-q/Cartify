@@ -16,3 +16,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'main.settings')
 application = get_wsgi_application()
 
 app = application
+
+from main.wsgi import HelloWorldApplication
+
+application = HelloWorldApplication(application)
