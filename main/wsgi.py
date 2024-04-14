@@ -17,6 +17,3 @@ application = get_wsgi_application()
 
 app = application
 
-from main.wsgi import HelloWorldApplication
-
-application = HelloWorldApplication(application)
