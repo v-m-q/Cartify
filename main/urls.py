@@ -39,3 +39,4 @@ urlpatterns = [
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 urlpatterns += static('media/', document_root=os.path.join(BASE_DIR, 'media'))
+urlpatterns += static('static/', document_root=os.path.join(BASE_DIR, 'static'))
