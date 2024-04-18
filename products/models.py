@@ -7,7 +7,7 @@ class Product(models.Model):
   description = models.TextField()
   price       = models.DecimalField(max_digits = 7 , decimal_places = 2)
   quantity    = models.IntegerField()
-  thumbnail   = models.ImageField(default='fallback.png', blank=True)
+  thumbnail   = models.CharField(max_length=50)
   avg_rate    = models.DecimalField(max_digits=3, decimal_places=1, blank=True, default=0)
   category    = models.ForeignKey(Category, on_delete=models.CASCADE)
 
