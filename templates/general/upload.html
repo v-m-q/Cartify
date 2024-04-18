@@ -1,0 +1,16 @@
+{% extends 'general/base.html' %}
+
+{% load static %}
+
+{% block body %}
+
+<body>
+
+  <div class="container home_msg">
+      <h2>Hi !</h2>
+      <h2>Hmm, who are you?</h2><a href="" class="btn btn-secondary">Log in</a> OR <a href="{% url 'deck' %}" class="btn btn-info">Go to decks</a>
+  </div>
+
+</body>
+
+{% endblock %} 

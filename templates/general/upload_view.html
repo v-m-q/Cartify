@@ -1,0 +1,37 @@
+<!-- upload_form.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Image to Imgur</title>
+</head>
+<body>
+    <h1>Upload Image to Imgur</h1>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="file" name="image">
+        <button type="submit">Upload</button>
+    </form>
+    <div id="result"></div>
+
+    <script>
+        document.querySelector('form').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const formData = new FormData(this);
+
+            const response = await fetch('/upload/', {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+            if (response.ok) {
+                document.getElementById('result').innerHTML = `<a href="${data.image_url}" target="_blank">Uploaded Image</a>`;
+            } else {
+                document.getElementById('result').innerHTML = `<div>Error: ${data.error}</div>`;
+            }
+        });
+    </script>
+</body>
+</html>
