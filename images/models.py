@@ -3,7 +3,7 @@ from products.models import Product
 
 class Images(models.Model):
   # id    = models.BigAutoField(auto_created=True, primary_key=True, serialize=False, null=False)
-  image   = models.CharField(max_length=50)
+  image   = models.ImageField(default='sample.png', blank=True)
   product = models.ForeignKey(Product, on_delete=models.CASCADE)
 
   class Meta:

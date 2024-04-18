@@ -6,7 +6,7 @@ class ProductAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         # Call the parent save_model method to save the object
         
-        client_id = 'acc328def3e5178'  
+        client_id = 'cid'  
         image_file =  obj.thumbnail # Access the uploaded image file from the model instance
 
         headers = {'Authorization': f'Client-ID {client_id}'}
